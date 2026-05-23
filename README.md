@@ -84,3 +84,53 @@ The YNAB tools will appear in Claude's tool list.
 - Budget selection defaults to your **last-used budget**. Pass `budget_id` to target a specific one.
 - YNAB API rate limit: 200 requests/hour (fine for conversational use).
 - The YNAB API token is stored in `.env` (never commit this file).
+
+---
+
+## Prompt Ideas
+
+Example prompts you can use with Claude once this MCP server is connected.
+
+### Budget Overview & Health Checks
+
+- "Give me a snapshot of my budget this month — income, spending, and what's left to assign."
+- "Which categories am I over budget on this month?"
+- "How much do I have left to spend on groceries, dining, and entertainment combined?"
+- "What's my net worth across all my accounts?"
+
+### Spending Analysis
+
+- "Show me my top 10 biggest expenses this month."
+- "How much did I spend on subscriptions in the last 30 days?"
+- "Compare my dining spending this month vs. last month."
+- "What did I spend money on last weekend? (Fri–Sun)"
+- "Find any transactions over $100 that aren't approved yet."
+
+### Transaction Management
+
+- "I just bought groceries for $47.83 at Kroger — log it to my Groceries category."
+- "Add a split transaction: $120 from Target — $80 household, $40 clothing."
+- "Approve all unapproved transactions from the last 7 days."
+- "Add a memo to my last Amazon transaction saying 'office supplies'."
+- "Delete that coffee shop charge from yesterday, it was a duplicate."
+
+### Recurring / Scheduled Transactions
+
+- "What bills are coming up in the next 2 weeks?"
+- "Set up a recurring $15/month Netflix charge starting June 1st."
+- "My gym membership went up to $35 — update the scheduled transaction."
+- "Cancel the scheduled transaction for my old streaming service."
+
+### Budget Adjustments
+
+- "Move $50 from Dining Out to Groceries."
+- "I have $200 ready to assign — spread it across my savings goals."
+- "Zero out my Clothing category and move the balance to Ready to Assign."
+- "Set my Vacation fund budget to $300 this month."
+
+### Planning & Goal Tracking
+
+- "Am I on track to stay under budget this month based on my spending so far?"
+- "How much should I budget per week for the rest of the month to not overspend?"
+- "Which categories have money left that I probably won't use this month?"
+- "What recurring expenses do I have, and what's my fixed cost baseline each month?"
