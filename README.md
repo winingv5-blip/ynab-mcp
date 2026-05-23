@@ -74,7 +74,7 @@ The YNAB tools will appear in Claude's tool list.
 | `update_scheduled_transaction` | Update amount, date, frequency, etc. |
 | `delete_scheduled_transaction` | Cancel a recurring transaction |
 | `get_categories` | List all categories with budgeted/activity/balance |
-| `get_month_summary` | Monthly income, spending, and ready-to-assign totals |
+| `get_month_summary` | Monthly income, budgeted, activity, and ready-to-assign totals |
 | `update_category_budget` | Set a category's budgeted amount |
 | `move_money` | Move money between categories (or to/from Ready to Assign) |
 
