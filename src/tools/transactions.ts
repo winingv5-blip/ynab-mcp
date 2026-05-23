@@ -275,12 +275,13 @@ export function registerTransactionTools(server: McpServer): void {
 
   server.tool(
     "approve_transactions",
-    "Bulk approve all unapproved transactions, optionally filtered by account",
+    "Bulk approve all unapproved transactions, optionally filtered by account. Use dry_run: true to preview which transactions would be approved without committing.",
     {
       budget_id: z.string().optional().describe("Budget ID (default: last-used)"),
       account_name: z.string().optional().describe("Only approve transactions in this account"),
+      dry_run: z.boolean().optional().describe("Preview which transactions would be approved without actually approving them (default: false)"),
     },
-    async ({ budget_id, account_name }) => {
+    async ({ budget_id, account_name, dry_run }) => {
       try {
         const bid = budget_id ?? DEFAULT_BUDGET_ID;
 
@@ -296,7 +297,26 @@ export function registerTransactionTools(server: McpServer): void {
 
         const unapproved = transactions.filter((t) => !t.approved && !t.deleted);
         if (unapproved.length === 0) {
-          return { content: [{ type: "text" as const, text: "No unapproved transactions found." }] };
+          return { content: [{ type: "text" as const, text: dry_run ? '{"dry_run":true,"count":0,"transactions":[]}' : "No unapproved transactions found." }] };
+        }
+
+        if (dry_run) {
+          return {
+            content: [{
+              type: "text" as const,
+              text: JSON.stringify({
+                dry_run: true,
+                count: unapproved.length,
+                transactions: unapproved.map((t) => ({
+                  id: t.id,
+                  date: t.date,
+                  amount: fromMilliunits(t.amount),
+                  payee_name: t.payee_name,
+                  account_name: t.account_name,
+                })),
+              }, null, 2),
+            }],
+          };
         }
 
         await ynabAPI.transactions.updateTransactions(bid, {
@@ -326,14 +346,33 @@ export function registerTransactionTools(server: McpServer): void {
 
   server.tool(
     "delete_transaction",
-    "Delete a transaction by ID",
+    "Delete a transaction by ID. Use dry_run: true to preview what would be deleted without committing.",
     {
       budget_id: z.string().optional().describe("Budget ID (default: last-used)"),
       id: z.string().describe("Transaction ID to delete"),
+      dry_run: z.boolean().optional().describe("Preview the deletion without actually deleting (default: false)"),
     },
-    async ({ budget_id, id }) => {
+    async ({ budget_id, id, dry_run }) => {
       try {
         const bid = budget_id ?? DEFAULT_BUDGET_ID;
+        if (dry_run) {
+          const { data } = await ynabAPI.transactions.getTransactionById(bid, id);
+          const t = data.transaction;
+          return {
+            content: [{
+              type: "text" as const,
+              text: JSON.stringify({
+                dry_run: true,
+                id: t.id,
+                date: t.date,
+                amount: fromMilliunits(t.amount),
+                payee_name: t.payee_name,
+                account_name: t.account_name,
+                category_name: t.category_name,
+              }, null, 2),
+            }],
+          };
+        }
         await ynabAPI.transactions.deleteTransaction(bid, id);
         return { content: [{ type: "text" as const, text: `Transaction ${id} deleted.` }] };
       } catch (err) {

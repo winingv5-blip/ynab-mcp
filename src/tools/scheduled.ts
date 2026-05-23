@@ -200,14 +200,34 @@ export function registerScheduledTools(server: McpServer): void {
 
   server.tool(
     "delete_scheduled_transaction",
-    "Cancel/delete a scheduled transaction by ID",
+    "Cancel/delete a scheduled transaction by ID. Use dry_run: true to preview what would be deleted without committing.",
     {
       budget_id: z.string().optional().describe("Budget ID (default: last-used)"),
       id: z.string().describe("Scheduled transaction ID to delete"),
+      dry_run: z.boolean().optional().describe("Preview the deletion without actually deleting (default: false)"),
     },
-    async ({ budget_id, id }) => {
+    async ({ budget_id, id, dry_run }) => {
       try {
         const bid = budget_id ?? DEFAULT_BUDGET_ID;
+        if (dry_run) {
+          const { data } = await ynabAPI.scheduledTransactions.getScheduledTransactionById(bid, id);
+          const st = data.scheduled_transaction;
+          return {
+            content: [{
+              type: "text" as const,
+              text: JSON.stringify({
+                dry_run: true,
+                id: st.id,
+                date_next: st.date_next,
+                frequency: FREQUENCY_LABELS[st.frequency] ?? st.frequency,
+                amount: fromMilliunits(st.amount),
+                payee_name: st.payee_name,
+                account_name: st.account_name,
+                category_name: st.category_name,
+              }, null, 2),
+            }],
+          };
+        }
         await ynabAPI.scheduledTransactions.deleteScheduledTransaction(bid, id);
         return { content: [{ type: "text" as const, text: `Scheduled transaction ${id} deleted.` }] };
       } catch (err) {
