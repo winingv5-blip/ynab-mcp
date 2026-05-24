@@ -9,8 +9,8 @@ export function registerAccountTools(server: McpServer): void {
     {},
     async () => {
       try {
-        const { data } = await ynabAPI.budgets.getBudgets();
-        const budgets = data.budgets.map((b) => ({
+        const { data } = await ynabAPI.plans.getPlans();
+        const budgets = data.plans.map((b) => ({
           id: b.id,
           name: b.name,
           last_modified_on: b.last_modified_on,

@@ -61,7 +61,7 @@ export function registerBudgetTools(server: McpServer): void {
       try {
         const bid = budget_id ?? DEFAULT_BUDGET_ID;
         const monthStr = month ?? currentMonthStr();
-        const { data } = await ynabAPI.months.getBudgetMonth(bid, monthStr);
+        const { data } = await ynabAPI.months.getPlanMonth(bid, monthStr);
         const m = data.month;
         return {
           content: [
